@@ -6,9 +6,9 @@
  */
 
 import path from 'path';
-import {Config} from '@jest/types';
-import {AggregatedResult, TestResult} from '@jest/test-result';
-import {clearLine, isInteractive} from 'jest-util';
+import { Config } from '@jest/types';
+import { AggregatedResult, TestResult } from '@jest/test-result';
+import { clearLine, isInteractive } from 'jest-util';
 import istanbulReport from 'istanbul-lib-report';
 import istanbulReports from 'istanbul-reports';
 import chalk from 'chalk';
@@ -18,12 +18,12 @@ import istanbulCoverage, {
   CoverageSummary,
   CoverageSummaryData,
 } from 'istanbul-lib-coverage';
-import libSourceMaps, {MapStore} from 'istanbul-lib-source-maps';
+import libSourceMaps, { MapStore } from 'istanbul-lib-source-maps';
 import Worker from 'jest-worker';
 import glob from 'glob';
-import {RawSourceMap} from 'source-map';
+import { RawSourceMap } from 'source-map';
 import BaseReporter from './base_reporter';
-import {Context, Test, CoverageWorker, CoverageReporterOptions} from './types';
+import { Context, Test, CoverageWorker, CoverageReporterOptions } from './types';
 
 const FAIL_COLOR = chalk.bold.red;
 const RUNNING_TEST_COLOR = chalk.bold.dim;
@@ -82,7 +82,7 @@ export default class CoverageReporter extends BaseReporter {
     aggregatedResults: AggregatedResult,
   ) {
     await this._addUntestedFiles(this._globalConfig, contexts);
-    const {map, sourceFinder} = this._sourceMapStore.transformCoverage(
+    const { map, sourceFinder } = this._sourceMapStore.transformCoverage(
       this._coverageMap,
     );
 
@@ -119,7 +119,7 @@ export default class CoverageReporter extends BaseReporter {
     globalConfig: Config.GlobalConfig,
     contexts: Set<Context>,
   ): Promise<void> {
-    const files: Array<{config: Config.ProjectConfig; path: string}> = [];
+    const files: Array<{ config: Config.ProjectConfig; path: string }> = [];
 
     contexts.forEach(context => {
       const config = context.config;
@@ -218,7 +218,7 @@ export default class CoverageReporter extends BaseReporter {
     if (globalConfig.coverageThreshold) {
       function check(
         name: string,
-        thresholds: {[index: string]: number},
+        thresholds: { [index: string]: number },
         actuals: CoverageSummaryData,
       ) {
         return (['statements', 'branches', 'lines', 'functions'] as Array<
@@ -233,7 +233,7 @@ export default class CoverageReporter extends BaseReporter {
               if (threshold * -1 < actualUncovered) {
                 errors.push(
                   `Jest: Uncovered count for ${key} (${actualUncovered})` +
-                    `exceeds ${name} threshold (${-1 * threshold})`,
+                  `exceeds ${name} threshold (${-1 * threshold})`,
                 );
               }
             } else if (actual < threshold) {
@@ -253,9 +253,10 @@ export default class CoverageReporter extends BaseReporter {
       };
       const coveredFiles = map.files();
       const thresholdGroups = Object.keys(globalConfig.coverageThreshold);
-      const groupTypeByThresholdGroup: {[index: string]: string} = {};
-      const filesByGlob: {[index: string]: Array<string>} = {};
+      const groupTypeByThresholdGroup: { [index: string]: string } = {};
+      const filesByGlob: { [index: string]: Array<string> } = {};
 
+      console.log('####| coveredFiles', coveredFiles);
       const coveredFilesSortedIntoThresholdGroup = coveredFiles.reduce<
         Array<[string, string | undefined]>
       >((files, file) => {
@@ -331,7 +332,11 @@ export default class CoverageReporter extends BaseReporter {
 
       let errors: Array<string> = [];
 
+      console.log('####| Some Information');
       thresholdGroups.forEach(thresholdGroup => {
+        console.log('####|', thresholdGroup);
+        console.log('####|', groupTypeByThresholdGroup);
+        console.log('####|', groupTypeByThresholdGroup[thresholdGroup]);
         switch (groupTypeByThresholdGroup[thresholdGroup]) {
           case THRESHOLD_GROUP_TYPES.GLOBAL: {
             const coverage = combineCoverage(
